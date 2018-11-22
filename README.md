@@ -49,6 +49,7 @@ simple-blog 프로젝트
 * Node.js
 * Express
 * Mongoose
+* Passport
 * Bootstrap 4
 * MongoDB
 

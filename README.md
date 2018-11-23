@@ -55,3 +55,8 @@ simple-blog 프로젝트
 
 ## 개발 환경
 AWS Cloud9: [링크](https://aws.amazon.com/cloud9/)
+
+## 참고 자료 References
+https://www.udemy.com/the-web-developer-bootcamp
+https://getbootstrap.com/docs/4.0
+

@@ -6,5 +6,5 @@ app.get("/", function(req, res) {
 })
 
 app.listen(process.env.PORT, "0.0.0.0", function() {
-    console.log("Simple Blog Server Has Started!);
+    console.log("Simple Blog Server Has Started!");
 })

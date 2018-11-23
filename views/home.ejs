@@ -1,5 +1,24 @@
 <% include ./partials/header %>
 
-<h1>Hello home page!</h1>
+<div class="container">
+    <% posts.forEach(function(post) { %>
+        <div class="list-group">
+            <a  id="post-list" href="#" class="list-group-item list-group-item-action flex-column align-items-start border-0">
+                <div class="d-flex w-100">
+                    <h5 class="mb-1"><%= post.subject %></h5>
+                </div>
+                <div class="d-flex w-100 justify-content-between text-muted">
+                    <small><%= post.date %></small>
+                    <small><%= post.author %></small>
+                </div>
+                <div class="d-flex w-100">
+                    <p class="text-truncate">
+                        <%= post.content %>
+                    </p>
+                </div>
+            </a>
+        </div> 
+    <% }); %>
+</div>
 
 <% include ./partials/footer %>

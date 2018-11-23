@@ -1,8 +1,10 @@
 var express = require("express");
 var app = express();
 
+app.set('view engine', 'ejs');
+
 app.get("/", function(req, res) {
-    res.send("this will be the blog page soon!");
+    res.render("home");
 })
 
 app.listen(process.env.PORT, "0.0.0.0", function() {

@@ -1,0 +1,14 @@
+<% include ./partials/header %>
+
+<div class="container mt-4">
+    <form action="/posts/<%= post.id %>?_method=PUT" method="POST">
+        <input class="form-control mb-2" type="text" name="post[subject]" value="<%= post.subject %>">
+        <textarea class="form-control mb-2" name="post[content]" rows="20"><%= post.content %></textarea>
+        <div class="row justify-content-center">
+            <input class="btn btn-md btn-light text-secondary mr-1" type="submit" value="OK">
+            <a class="btn btn-md btn-light text-secondary" href="/posts/<%= post.id %>">Cancel</a> 
+        </div>
+    </form>
+</div>
+
+<% include ./partials/footer %>

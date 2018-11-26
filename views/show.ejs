@@ -1,0 +1,24 @@
+<% include ./partials/header %>
+
+<div class="container mt-4">
+    <h1 class=text-center mb-3><%= post.subject %></h1>
+    
+    <div class="text-muted d-flex justify-content-between mb-2">
+        <span><%= post.date %></span>
+        <span><%= post.author %></span>
+    </div>
+    <p><%= post.content %></p>
+    <div class="form-row">
+        <form action="/" method="GET">
+            <button class="btn btn-light btn-sm text-secondary">List</button>
+        </form>
+        <form action="/posts/<%= post.id %>/edit/" method="GET">
+            <button class="btn btn-light btn-sm text-secondary mr-1">Edit</button>
+        </form>
+        <form action="/posts/<%= post.id %>?_method=DELETE" method="POST">
+            <button class="btn btn-light btn-sm text-secondary">Delete</button>
+        </form>
+    </div>
+</div>
+
+<% include ./partials/footer %>

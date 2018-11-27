@@ -59,6 +59,10 @@ app.get("/posts/:id/edit", function(req, res) {
     });
 })
 
+app.get("/about", function(req, res) {
+    res.render("about");
+})
+
 function pad(n, width) {
     n = n + '';
     return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;

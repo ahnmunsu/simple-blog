@@ -12,10 +12,10 @@
         <form action="/" method="GET">
             <button class="btn btn-light btn-sm text-secondary">List</button>
         </form>
-        <form action="/posts/<%= post.id %>/edit/" method="GET">
+        <form action="/posts/<%= post._id %>/edit/" method="GET">
             <button class="btn btn-light btn-sm text-secondary mr-1">Edit</button>
         </form>
-        <form action="/posts/<%= post.id %>?_method=DELETE" method="POST">
+        <form action="/posts/<%= post._id %>?_method=DELETE" method="POST">
             <button class="btn btn-light btn-sm text-secondary">Delete</button>
         </form>
     </div>

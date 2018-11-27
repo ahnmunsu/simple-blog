@@ -37,6 +37,10 @@ app.get("/", function(req, res) {
     res.render("posts", {posts:posts});
 })
 
+app.get("/posts/new", function(req, res) {
+    res.render("new");
+})
+
 app.get("/posts/:id", function(req, res) {
     posts.forEach(function(element) {
         if (element.id == req.params.id) {
@@ -53,6 +57,29 @@ app.get("/posts/:id/edit", function(req, res) {
             return;
         }
     });
+})
+
+function pad(n, width) {
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
+}
+
+app.post("/posts", function(req, res) {
+    var today = new Date();
+    var date = pad(today.getFullYear(), 4) + '-' + pad(today.getMonth()+1, 2) + '-' + pad(today.getDate(), 2);
+    var time = pad(today.getHours(), 2) + ":" + pad(today.getMinutes(), 2) + ":" + pad(today.getSeconds(), 2);
+    var dateTime = date+' '+ time;
+    
+    var post = { 
+        id: posts.length+1, 
+        subject: req.body.post.subject, 
+        date: dateTime,
+        author: "user1", 
+        content: req.body.post.content
+    };
+   
+    posts.push(post); 
+    res.redirect("/");
 })
 
 app.put("/posts/:id", function(req, res) {

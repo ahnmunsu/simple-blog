@@ -9,7 +9,13 @@ var passportLocalMongoose = require("passport-local-mongoose");
 
 var postSchema = new mongoose.Schema({
     subject: String,
-    author: String,
+    author: {
+            id: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+            },
+            username: String
+    },
     content: String,
     date: Date
 });
@@ -62,17 +68,25 @@ app.get("/posts/:id", function(req, res) {
         if (err) {
             console.log(err);
         } else {
-            res.render("show", {post:foundPost, currentUser:req.user});
+            if (foundPost) {
+                res.render("show", {post:foundPost, currentUser:req.user});
+            } else {
+                res.redirect("/");
+            }
         }
     });
 });
 
-app.get("/posts/:id/edit", function(req, res) {
+app.get("/posts/:id/edit", checkPostOwnerShip, function(req, res) {
     Post.findById(req.params.id, function(err, foundPost) {
         if (err) {
             console.log(err);
         } else {
-            res.render("edit", {post:foundPost, currentUser:req.user});
+            if (foundPost) {
+                res.render("edit", {post:foundPost, currentUser:req.user});
+            } else {
+                res.redirect("/");
+            }
         }
     });
 });
@@ -85,7 +99,10 @@ app.post("/posts", function(req, res) {
     var newPost = { 
         subject: req.body.post.subject, 
         date: Date(),
-        author: req.user.username, 
+        author: {
+            id: req.user._id, 
+            username: req.user.username
+        },
         content: req.body.post.content
     };
    
@@ -98,7 +115,7 @@ app.post("/posts", function(req, res) {
     });
 });
 
-app.put("/posts/:id", function(req, res) {
+app.put("/posts/:id", checkPostOwnerShip, function(req, res) {
     req.body.post.date = Date();
     Post.findByIdAndUpdate(req.params.id, req.body.post, function(err, updatedPost) {
         if (err) {
@@ -109,7 +126,7 @@ app.put("/posts/:id", function(req, res) {
     });
 });
 
-app.delete("/posts/:id", function(req, res) {
+app.delete("/posts/:id", checkPostOwnerShip, function(req, res) {
     Post.findByIdAndRemove(req.params.id, function(err) {
         if (err) {
             res.redirect("/");
@@ -184,6 +201,24 @@ function isNotLoggedIn(req, res, next) {
     }
    
     res.redirect("/");
+}
+
+function checkPostOwnerShip(req, res, next) {
+    if (req.isAuthenticated()) {
+        Post.findById(req.params.id, function(err, foundPost) {
+            if (err) {
+                res.redirect("back");
+            } else {
+                if (foundPost.author.id.equals(req.user._id)) {
+                    next();
+                } else {
+                    res.redirect("back");
+                }
+            }
+        })
+    } else {
+        res.redirect("back");
+    }
 }
 
 app.listen(process.env.PORT, "0.0.0.0", function() {

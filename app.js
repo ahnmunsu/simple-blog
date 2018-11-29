@@ -10,14 +10,20 @@ var passportLocalMongoose = require("passport-local-mongoose");
 var postSchema = new mongoose.Schema({
     subject: String,
     author: {
-            id: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User"
-            },
-            username: String
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        username: String
     },
     content: String,
-    date: Date
+    date: Date,
+    comments: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Comment"
+        }
+    ]
 });
 
 var Post = mongoose.model("Post", postSchema);
@@ -30,6 +36,19 @@ var userSchema = new mongoose.Schema({
 userSchema.plugin(passportLocalMongoose);
 
 var User = mongoose.model("User", userSchema);
+
+var commentSchema = new mongoose.Schema({
+    text: String,
+    author: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        username: String
+    }
+});
+
+var Comment = mongoose.model("Comment", commentSchema);
 
 mongoose.connect("mongodb://localhost/simple_blog", { useNewUrlParser: true});
 
@@ -64,7 +83,7 @@ app.get("/posts/new", isLoggedIn, function(req, res) {
 });
 
 app.get("/posts/:id", function(req, res) {
-    Post.findById(req.params.id, function(err, foundPost) {
+    Post.findById(req.params.id).populate("comments").exec(function(err, foundPost) {
         if (err) {
             console.log(err);
         } else {
@@ -127,6 +146,16 @@ app.put("/posts/:id", checkPostOwnerShip, function(req, res) {
 });
 
 app.delete("/posts/:id", checkPostOwnerShip, function(req, res) {
+    Post.findById(req.params.id, function(err, foundPost) {
+        foundPost.comments.forEach(function(comment) {
+            Comment.findByIdAndRemove(comment._id, function(err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
+        });
+    });
+    
     Post.findByIdAndRemove(req.params.id, function(err) {
         if (err) {
             res.redirect("/");
@@ -187,6 +216,89 @@ app.delete("/deregister", function(req, res) {
     });
 });
 
+app.post("/posts/:id/comment", isLoggedIn, function(req, res) {
+    Post.findById(req.params.id, function(err, foundPost) {
+        if (err) {
+            console.log(err);
+            res.redirect("/");
+        } else {
+            if (foundPost) {
+                Comment.create(req.body.comment, function(err, comment) {
+                    if (err) {
+                        console.log(err);
+                        res.redirect("/");
+                    } else {
+                        comment.author.id = req.user._id;
+                        comment.author.username = req.user.username;
+                        comment.save();
+                        foundPost.comments.unshift(comment);
+                        foundPost.save();
+                        res.redirect("/posts/" + foundPost._id);
+                    }
+                });
+            } else {
+                res.redirect("/");
+            }
+        }
+    })
+});
+
+app.get("/posts/:id/comment/:comment_id/edit", checkCommentOwnerShip, function(req, res) {
+    Post.findById(req.params.id).populate("comments").exec(function(err, foundPost) {
+        if (err) {
+            console.log(err);
+        } else {
+            if (foundPost) {
+                Comment.findById(req.params.comment_id, function(err, foundComment) {
+                    if (err) {
+                        console.log(err);
+                    } else { 
+                        if (foundComment) {
+                            res.render("comment_edit", {post:foundPost, currentUser:req.user, comment_to_edit:foundComment});
+                        } else {
+                            console.log(err);
+                        }
+                    }
+                });
+            } else {
+                res.redirect("/");
+            }
+        }
+    });
+});
+
+app.put("/posts/:id/comment/:comment_id", checkCommentOwnerShip, function(req, res) {
+    Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment, function(err, updatedComment) {
+        if (err) {
+            res.redirect("/");
+        } else {
+            res.redirect("/posts/" + req.params.id);
+        }
+    });
+});
+
+app.delete("/posts/:id/comment/:comment_id", checkCommentOwnerShip, function(req, res) {
+    Post.findById(req.params.id, function(err, foundPost) {
+        if (err) {
+            console.log(err);
+            res.redirect("/");
+        } else {
+            var idx = foundPost.comments.indexOf(req.params.comment_id);
+            if (idx !== -1) {
+                foundPost.comments.splice(idx, 1);
+                foundPost.save();
+                
+                Comment.findByIdAndRemove(req.params.comment_id, function(err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    res.redirect("/posts/" + req.params.id);
+                });
+            }
+        }
+    });
+})
+
 function isLoggedIn(req, res, next) {
     if (req. isAuthenticated()) {
         return next();
@@ -210,6 +322,24 @@ function checkPostOwnerShip(req, res, next) {
                 res.redirect("back");
             } else {
                 if (foundPost.author.id.equals(req.user._id)) {
+                    next();
+                } else {
+                    res.redirect("back");
+                }
+            }
+        })
+    } else {
+        res.redirect("back");
+    }
+}
+
+function checkCommentOwnerShip(req, res, next) {
+    if (req.isAuthenticated()) {
+        Comment.findById(req.params.comment_id, function(err, foundComment) {
+            if (err) {
+                res.redirect("back");
+            } else {
+                if (foundComment.author.id.equals(req.user._id)) {
                     next();
                 } else {
                     res.redirect("back");

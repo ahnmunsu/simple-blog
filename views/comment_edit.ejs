@@ -22,12 +22,12 @@
         <% } %>
     </div>
 
-    <form action="/posts/<%= post._id %>/comment" method="POST">
+    <form action="/posts/<%= post._id %>/comment/<%= comment_to_edit._id %>?_method=PUT" method="POST">
         <div class="input-group mb-3 mt-3">
             <div class="input-group-prepend">
                 <button class="input-group-text btn text-secondary" id="comment-button">Comment</button>
             </div>
-            <textarea class="form-control" name="comment[text]" rows="1" placeholder="" aria-describedby="comment-button"></textarea>
+            <textarea id="comment_edit" class="form-control" name="comment[text]" rows="1" placeholder="" aria-describedby="comment-button"><%= comment_to_edit.text %></textarea>
         </div>
     </form>
     
@@ -54,5 +54,9 @@
         </div>
     <% }) %>
 </div>
+
+<script>
+    document.getElementById('comment_edit').focus();
+</script>
 
 <% include ./partials/footer %>

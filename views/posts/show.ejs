@@ -1,4 +1,4 @@
-<% include ./partials/header %>
+<% include ../partials/header %>
 
 <div class="container mt-4">
     <h1 class=text-center mb-3><%= post.subject %></h1>
@@ -9,7 +9,7 @@
     </div>
     <pre><%= post.content %></pre>
     <div class="form-row">
-        <form action="/" method="GET">
+        <form action="/posts" method="GET">
             <button class="btn btn-light btn-sm text-secondary">List</button>
         </form>
         <% if (currentUser && post.author.id.equals(currentUser._id)) { %>
@@ -21,8 +21,7 @@
             </form>
         <% } %>
     </div>
-
-    <form action="/posts/<%= post._id %>/comment" method="POST">
+    <form action="/posts/<%= post._id %>/comments" method="POST">
         <div class="input-group mb-3 mt-3">
             <div class="input-group-prepend">
                 <button class="input-group-text btn text-secondary" id="comment-button">Comment</button>
@@ -42,10 +41,10 @@
                 </p>
                 <% if (currentUser && comment.author.id.equals(currentUser._id)) { %>
                     <div class="form-row">
-                        <form action="/posts/<%= post._id %>/comment/<%= comment._id %>/edit/" method="GET">
+                        <form action="/posts/<%= post._id %>/comments/<%= comment._id %>/edit" method="GET">
                             <button class="btn btn-light btn-sm text-secondary mr-1">Edit</button>
                         </form>
-                        <form action="/posts/<%= post._id %>/comment/<%= comment._id %>?_method=DELETE" method="POST">
+                        <form action="/posts/<%= post._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST">
                             <button class="btn btn-light btn-sm text-secondary">Delete</button>
                         </form>
                     </div>
@@ -55,4 +54,4 @@
     <% }) %>
 </div>
 
-<% include ./partials/footer %>
+<% include ../partials/footer %>

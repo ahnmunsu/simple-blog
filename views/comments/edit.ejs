@@ -1,4 +1,4 @@
-<% include ./partials/header %>
+<% include ../partials/header %>
 
 <div class="container mt-4">
     <h1 class=text-center mb-3><%= post.subject %></h1>
@@ -22,7 +22,7 @@
         <% } %>
     </div>
 
-    <form action="/posts/<%= post._id %>/comment/<%= comment_to_edit._id %>?_method=PUT" method="POST">
+    <form action="/posts/<%= post._id %>/comments/<%= comment_to_edit._id %>?_method=PUT" method="POST">
         <div class="input-group mb-3 mt-3">
             <div class="input-group-prepend">
                 <button class="input-group-text btn text-secondary" id="comment-button">Comment</button>
@@ -59,4 +59,4 @@
     document.getElementById('comment_edit').focus();
 </script>
 
-<% include ./partials/footer %>
+<% include ../partials/footer %>

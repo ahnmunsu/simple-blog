@@ -16,11 +16,12 @@ router.post("/register", function(req, res) {
     var newUser = new User({username: req.body.username});
     User.register(newUser, req.body.password, function(err, user) {
         if (err) {
-            console.log(err);
+            req.flash("error", err.message);
             return res.render("register", {currentUser:req.user});
         }
         
         passport.authenticate("local")(req, res, function() {
+            res.flash("success", "Welcome to Simple Blog " + user.username);
             res.redirect("/posts");
         });
     });
@@ -32,6 +33,7 @@ router.get("/login", middleware.isNotLoggedIn, function(req, res) {
 
 router.get("/logout", function(req, res) {
     req.logout();
+    req.flash("success", "Logged you out");
     res.redirect("/posts");
 });
 
@@ -53,6 +55,7 @@ router.delete("/deregister", function(req, res) {
         if (err) {
             res.redirect("/posts");
         } else {
+            req.flash("success", "Signed you out");
             req.logout();
             res.redirect("/posts");
         }

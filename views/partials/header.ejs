@@ -47,4 +47,18 @@
                 </ul>                
             </div>
         </nav>
+        
+        <div class="text-center">
+            <% if(error && error.length > 0){ %>
+                <div class="alert alert-warning mb-0" role="alert">
+                    <%= error %>
+                </div>
+            <% } %>
+            <% if(success && success.length > 0){ %>
+                <div class="alert alert-success mb-0" role="alert">
+                    <%= success %>
+                </div>
+            <% } %>
+        </div>
+        
         <img src="/images/banner-image.jpg" class="img-fluid" alt="banner-image">

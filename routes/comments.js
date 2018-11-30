@@ -15,7 +15,7 @@ router.post("/", middleware.isLoggedIn, function(req, res) {
             if (foundPost) {
                 Comment.create(req.body.comment, function(err, comment) {
                     if (err) {
-                        console.log(err);
+                        req.flash("error", "Cannot add comment");
                         res.redirect("/posts");
                     } else {
                         comment.author.id = req.user._id;
@@ -23,6 +23,7 @@ router.post("/", middleware.isLoggedIn, function(req, res) {
                         comment.save();
                         foundPost.comments.unshift(comment);
                         foundPost.save();
+                        req.flash("success", "Comment added successfully");
                         res.redirect("/posts/" + foundPost._id);
                     }
                 });
@@ -30,7 +31,7 @@ router.post("/", middleware.isLoggedIn, function(req, res) {
                 res.redirect("/posts");
             }
         }
-    })
+    });
 });
 
 router.get("/:comment_id/edit", middleware.checkCommentOwnerShip, function(req, res) {
@@ -66,6 +67,7 @@ router.put("/:comment_id", middleware.checkCommentOwnerShip, function(req, res) 
         if (err) {
             res.redirect("/posts");
         } else {
+            req.flash("success", "Comment updated successfully");
             res.redirect("/posts/" + postId);
         }
     });
@@ -88,11 +90,12 @@ router.delete("/:comment_id", middleware.checkCommentOwnerShip, function(req, re
                     if (err) {
                         console.log(err);
                     }
+                    req.flash("success", "Comment deleted successfully");
                     res.redirect("/posts/" + postId);
                 });
             }
         }
     });
-})
+});
 
 module.exports = router;

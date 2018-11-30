@@ -61,6 +61,7 @@ router.post("/", function(req, res) {
         if (err) {
             console.log(err);
         } else {
+            req.flash("success", "Post added successfully");
             res.redirect("/posts");
         }
     });
@@ -72,6 +73,7 @@ router.put("/:id", middleware.checkPostOwnerShip, function(req, res) {
         if (err) {
             res.redirect("/posts");
         } else {
+            req.flash("success", "Post updated successfully");
             res.redirect("/posts/" + req.params.id);
         }
     });
@@ -92,6 +94,7 @@ router.delete("/:id", middleware.checkPostOwnerShip, function(req, res) {
         if (err) {
             console.log(err);
         } else {
+            req.flash("success", "Post deleted successfully");
             res.redirect("/posts");
         }
     });

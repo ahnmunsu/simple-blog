@@ -3,6 +3,7 @@ var app = express();
 var methodOverride = require("method-override");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
+var flash = require("connect-flash");
 var passport = require("passport");
 var LocalStrategy = require("passport-local");
 
@@ -20,6 +21,7 @@ mongoose.connect("mongodb://localhost/simple_blog", { useNewUrlParser: true});
 
 app.use(express.static("public"));
 app.use(methodOverride("_method"));
+app.use(flash());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(require("express-session")({
     secret: "$2R^9j&0b*4p^4N",
@@ -31,6 +33,12 @@ app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+
+app.use(function(req, res, next) {
+    res.locals.error = req.flash("error");
+    res.locals.success = req.flash("success");
+    next();
+});
 
 app.use("/", indexRoutes);
 app.use("/posts", postRoutes);

@@ -21,7 +21,7 @@ router.post("/register", function(req, res) {
         }
         
         passport.authenticate("local")(req, res, function() {
-            res.flash("success", "Welcome to Simple Blog " + user.username);
+            req.flash("success", "Welcome to Simple Blog, " + user.username);
             res.redirect("/posts");
         });
     });
@@ -55,7 +55,7 @@ router.delete("/deregister", function(req, res) {
         if (err) {
             res.redirect("/posts");
         } else {
-            req.flash("success", "Signed you out");
+            req.flash("success", "Goodbye~!");
             req.logout();
             res.redirect("/posts");
         }
